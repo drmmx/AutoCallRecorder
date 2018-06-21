@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.IBinder;
+import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
 
@@ -43,8 +44,14 @@ public class CallRecorderService extends Service {
 
         TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext()
                 .getSystemService(getApplicationContext().TELEPHONY_SERVICE);
+        telephonyManager.listen(new PhoneStateListener(){
+            @Override
+            public void onCallStateChanged(int state, String phoneNumber) {
+                super.onCallStateChanged(state, phoneNumber);
+            }
+        });
 
-        return super.onStartCommand(intent, flags, startId);
+//        return super.onStartCommand(intent, flags, startId);
     }
 
 }
