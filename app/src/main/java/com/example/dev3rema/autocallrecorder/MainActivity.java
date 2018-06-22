@@ -1,87 +1,60 @@
 package com.example.dev3rema.autocallrecorder;
 
-import android.media.MediaRecorder;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MediaRecorder recorder;
-    private boolean isRecordStarted;
+    ToggleButton mToggleButton;
+
+    // Requesting permission to RECORD_AUDIO
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted ) finish();
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startMediaRecorder(getAudioSource("VOICE_CALL"));
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
+        mToggleButton = findViewById(R.id.toggleButton);
+
     }
 
-    private boolean startMediaRecorder(final int audioSource){
-        recorder = new MediaRecorder();
-        try{
-            recorder.reset();
-            recorder.setAudioSource(audioSource);
-            recorder.setAudioSamplingRate(8000);
-            recorder.setAudioEncodingBitRate(12200);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            String fileName = getExternalCacheDir().getAbsolutePath();
-            recorder.setOutputFile(fileName);
+    public void toggleButton(View view) {
 
-            /*MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
-                public void onError(MediaRecorder arg0, int arg1, int arg2) {
-                    Log.e(TAG, "OnErrorListener " + arg1 + "," + arg2);
-                    terminateAndEraseFile();
-                }
-            };
-            recorder.setOnErrorListener(errorListener);
+        boolean isChecked = ((ToggleButton) view).isChecked();
 
-            MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
-                public void onInfo(MediaRecorder arg0, int arg1, int arg2) {
-                    Log.e(TAG, "OnInfoListener " + arg1 + "," + arg2);
-                    terminateAndEraseFile();
-                }
-            };
-            recorder.setOnInfoListener(infoListener);*/
-
-
-            recorder.prepare();
-            // Sometimes prepare takes some time to complete
-            Thread.sleep(2000);
-            recorder.start();
-            isRecordStarted = true;
-            return true;
-        }catch (Exception e){
-            e.getMessage();
-            return false;
+        if (isChecked) {
+            startService(new Intent(this, CallRecorderService.class));
+            Toast.makeText(this, "Call recorder started", Toast.LENGTH_SHORT).show();
+        } else {
+            stopService(new Intent(this, CallRecorderService.class));
+            Toast.makeText(this, "Call recorder stopped", Toast.LENGTH_SHORT).show();
         }
+
     }
 
-    public static int getAudioSource(String str) {
-        if (str.equals("MIC")) {
-            return MediaRecorder.AudioSource.MIC;
-        }
-        else if (str.equals("VOICE_COMMUNICATION")) {
-            return MediaRecorder.AudioSource.VOICE_COMMUNICATION;
-        }
-        else if (str.equals("VOICE_CALL")) {
-            return MediaRecorder.AudioSource.VOICE_CALL;
-        }
-        else if (str.equals("VOICE_DOWNLINK")) {
-            return MediaRecorder.AudioSource.VOICE_DOWNLINK;
-        }
-        else if (str.equals("VOICE_UPLINK")) {
-            return MediaRecorder.AudioSource.VOICE_UPLINK;
-        }
-        else if (str.equals("VOICE_RECOGNITION")) {
-            return MediaRecorder.AudioSource.VOICE_RECOGNITION;
-        }
-        else if (str.equals("CAMCORDER")) {
-            return MediaRecorder.AudioSource.CAMCORDER;
-        }
-        else {
-            return MediaRecorder.AudioSource.DEFAULT;
-        }
-    }
 }
