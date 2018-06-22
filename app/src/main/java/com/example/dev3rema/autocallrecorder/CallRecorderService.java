@@ -16,7 +16,7 @@ import java.util.Date;
 public class CallRecorderService extends Service {
 
     private MediaRecorder mRecorder;
-    private boolean isRecordStarted = false;
+    private boolean isRinging = false;
     private File mFile;
     String path = "/sdcard/call_records/";
 
@@ -38,7 +38,7 @@ public class CallRecorderService extends Service {
         CharSequence sequence = DateFormat.format("MM-dd-yy-hh-mm-ss", date.getTime());
 
         mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile(mFile.getAbsolutePath() + "/" + sequence + "call_record.3gp");
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
@@ -46,25 +46,25 @@ public class CallRecorderService extends Service {
         PhoneStateListener phoneStateListener = new PhoneStateListener() {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
-/*                if (state == TelephonyManager.CALL_STATE_RINGING) {
-                    mRecorder.start();
-                }*/ if (state == TelephonyManager.CALL_STATE_IDLE && mRecorder == null && isRecordStarted) {
-                    mRecorder.stop();
-                    if (mRecorder != null) {
+                if (state == TelephonyManager.CALL_STATE_RINGING) {
+                    isRinging = true;
+                } else if (state == TelephonyManager.CALL_STATE_IDLE) {
+                    if (isRinging) {
+                        mRecorder.stop();
                         mRecorder.reset();
                         mRecorder.release();
 
-                        isRecordStarted = false;
+                        isRinging = false;
                         mRecorder = null;
                     }
                 } else if (state == TelephonyManager.CALL_STATE_OFFHOOK) {
                     try {
                         mRecorder.prepare();
+                        mRecorder.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    mRecorder.start();
-                    isRecordStarted = true;
+                    isRinging = true;
                 }
                 super.onCallStateChanged(state, incomingNumber);
             }
