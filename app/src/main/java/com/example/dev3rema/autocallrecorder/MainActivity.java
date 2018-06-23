@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean permissionToRecordAccepted = false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO,
             Manifest.permission.PROCESS_OUTGOING_CALLS,
-            Manifest.permission.CAPTURE_AUDIO_OUTPUT};
+            Manifest.permission.CAPTURE_AUDIO_OUTPUT,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE};
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isChecked) {
             startService(new Intent(this, CallRecorderService.class));
+//            MyJobService.enqueueWork(this, new Intent(this, MyJobService.class));
             Toast.makeText(this, "Call recorder started", Toast.LENGTH_SHORT).show();
         } else {
             stopService(new Intent(this, CallRecorderService.class));

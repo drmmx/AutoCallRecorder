@@ -1,10 +1,11 @@
 package com.example.dev3rema.autocallrecorder;
 
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
@@ -14,37 +15,34 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class CallRecorderService extends Service {
+/**
+ * Created by dev3rema
+ */
+public class MyJobService extends JobIntentService {
+
+    public static final int JOB_ID = 0x01;
 
     private static final String TAG = "CallRecorderService";
 
     private MediaRecorder mRecorder;
     private boolean isRinging = false;
     private File mFile;
-//    String path = "/sdcard/call_records/";
 
-    public CallRecorderService() {
-
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, MyJobService.class, JOB_ID, work);
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
+    protected void onHandleWork(@NonNull Intent intent) {
         mFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
-        //current date and time
-/*        Date date = new Date();
-        CharSequence sequence = DateFormat.format("MM-dd-yy-hh-mm-ss", date.getTime());*/
+        Date date = new Date();
+        CharSequence sequence = DateFormat.format("MM-dd-yy-hh-mm-ss", date.getTime());
 
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFile.getAbsolutePath() + "/" + System.currentTimeMillis() + ".mp3");
+        mRecorder.setOutputFile(mFile.getAbsolutePath() + "/" + sequence + "_call_record.mp3");
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         PhoneStateListener phoneStateListener = new PhoneStateListener() {
@@ -53,8 +51,8 @@ public class CallRecorderService extends Service {
                 if (state == TelephonyManager.CALL_STATE_IDLE) {
                     if (isRinging) {
                         mRecorder.stop();
-                        mRecorder.reset();
                         mRecorder.release();
+                        mRecorder = null;
 
                         isRinging = false;
                     }
@@ -77,7 +75,6 @@ public class CallRecorderService extends Service {
             manager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
 
-        return START_STICKY;
     }
 
 }

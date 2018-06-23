@@ -12,6 +12,7 @@ public class BootUpReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             context.startService(new Intent(context, CallRecorderService.class));
+//            MyJobService.enqueueWork(context, new Intent(context, MyJobService.class));
         }
     }
 }
