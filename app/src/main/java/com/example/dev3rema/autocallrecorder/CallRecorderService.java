@@ -18,7 +18,7 @@ public class CallRecorderService extends Service {
     private MediaRecorder mRecorder;
     private boolean isRinging = false;
     private File mFile;
-    String path = "/sdcard/call_records/";
+//    String path = "/sdcard/call_records/";
 
     public CallRecorderService() {
 
