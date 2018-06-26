@@ -22,8 +22,8 @@ public class CallRecorderService extends Service {
     private boolean isRecording;
     private String mPhoneNumber;
 
-    private Date date = new Date();
-    private CharSequence sequence = DateFormat.format("MM-dd-yy-hh-mm-ss", date.getTime());
+//    private Date date = new Date();
+//    private CharSequence sequence = DateFormat.format("MM-dd-yy-hh-mm-ss", date.getTime());
 
     BroadcastReceiver callRecorder = new BroadcastReceiver() {
         @Override
@@ -90,7 +90,7 @@ public class CallRecorderService extends Service {
         super.onDestroy();
         unregisterReceiver(callRecorder);
         unregisterReceiver(OutGoingNumDetector);
-        Toast.makeText(this, "Call recorder service done", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Call recorder service closed", Toast.LENGTH_SHORT).show();
 /*        BootUpReceiver receiver = new BootUpReceiver();
         IntentFilter bootReceiverFilter = new IntentFilter();
         bootReceiverFilter.addAction("android.intent.action.BOOT_COMPLETED");
