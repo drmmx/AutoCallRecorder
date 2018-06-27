@@ -2,6 +2,8 @@ package com.example.dev3rema.autocallrecorder;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -44,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
@@ -52,17 +53,9 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(mContext, CallRecorderService.class));
         finish();
 
-/*        findViewById(R.id.startServiceButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startService(new Intent(mContext, CallRecorderService.class));
-                finish();
-            }
-        });*/
-
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
+/*    private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -70,6 +63,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
-    }
+    }*/
 
 }

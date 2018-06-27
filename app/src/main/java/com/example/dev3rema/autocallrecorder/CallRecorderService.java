@@ -65,7 +65,7 @@ public class CallRecorderService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(getApplicationContext(), "Service Created", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Service Created", Toast.LENGTH_SHORT).show();
 
         IntentFilter RecFilter = new IntentFilter();
         RecFilter.addAction("android.intent.action.PHONE_STATE");
