@@ -91,11 +91,6 @@ public class CallRecorderService extends Service {
         unregisterReceiver(callRecorder);
         unregisterReceiver(OutGoingNumDetector);
         Toast.makeText(this, "Call recorder service closed", Toast.LENGTH_SHORT).show();
-/*        BootUpReceiver receiver = new BootUpReceiver();
-        IntentFilter bootReceiverFilter = new IntentFilter();
-        bootReceiverFilter.addAction("android.intent.action.BOOT_COMPLETED");
-        registerReceiver(receiver, bootReceiverFilter);
-        Toast.makeText(this, "Service restarted", Toast.LENGTH_SHORT).show();*/
     }
 
     public void startRecording() {
@@ -103,7 +98,7 @@ public class CallRecorderService extends Service {
             if (mRecorder == null) {
                 mRecorder = new MediaRecorder();
             }
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             String file = Environment.getExternalStorageDirectory().toString();
@@ -116,8 +111,6 @@ public class CallRecorderService extends Service {
 
             try {
                 mRecorder.prepare();
-/*            } catch (IllegalStateException e) {
-                e.printStackTrace();*/
             } catch (IOException e) {
                 e.printStackTrace();
             }
